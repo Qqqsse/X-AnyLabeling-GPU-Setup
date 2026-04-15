@@ -1,0 +1,6 @@
+# 忽略主程式原始碼資料夾 (避免把下載下來的 AnyLabeling 整個傳到你的 repo 裡)
+X-AnyLabeling/
+
+# 忽略可能產生的暫存檔
+__pycache__/
+*.pyc
