@@ -36,10 +36,10 @@ setup.bat
 start.bat
 ```
 
-此腳本會自動啟動 `anylabeling` 環境，並執行：
+此腳本會使用 `conda run -n anylabeling` 方式啟動（比 `conda activate` 在批次檔中更穩定），並執行：
 
 ```bat
-python X-AnyLabeling/anylabeling/app.py
+conda run -n anylabeling python X-AnyLabeling/anylabeling/app.py
 ```
 
 ---
@@ -95,3 +95,4 @@ python X-AnyLabeling/anylabeling/app.py
 
 - 你的系統已安裝全域 CUDA 12.6，可搭配本流程使用。
 - 若 `conda` 指令無法使用，請改用 Anaconda Prompt，或先完成 conda 初始化設定。
+- 若 `cmd` 出現中文亂碼，請確認批次檔以 UTF-8 儲存，並由腳本自動切換到 UTF-8 code page（`chcp 65001`）。

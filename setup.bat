@@ -1,9 +1,20 @@
 @echo off
 setlocal
+chcp 65001 >nul
+set "PYTHONIOENCODING=utf-8"
+set "PYTHONUTF8=1"
+set "NO_COLOR=1"
+set "FORCE_COLOR=0"
 
 echo ========================================
 echo X-AnyLabeling GPU 環境自動安裝腳本
 echo ========================================
+
+where conda >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] 找不到 conda 指令，請使用 Anaconda Prompt 或先設定 PATH。
+    exit /b 1
+)
 
 REM 1) Clone 專案（若已存在則略過）
 if exist "X-AnyLabeling" (
@@ -35,41 +46,33 @@ if errorlevel 1 (
     exit /b 1
 )
 
-REM 4) 啟動環境
-call conda.bat activate anylabeling
-if errorlevel 1 (
-    echo [ERROR] 無法啟動 Conda 環境 anylabeling。
-    echo [HINT] 請確認 Anaconda/Miniconda 已安裝且 conda.bat 可用。
-    exit /b 1
-)
-
-REM 5) 安裝 cuDNN
+REM 4) 安裝 cuDNN
 echo [STEP] 安裝 cuDNN (CUDA 12) ...
-conda install nvidia::cudnn cuda-version=12 -y
+conda install -n anylabeling nvidia::cudnn cuda-version=12 -y
 if errorlevel 1 (
     echo [ERROR] cuDNN 安裝失敗。
     exit /b 1
 )
 
-REM 6) 安裝 CUDA 12 專用 onnxruntime-gpu
+REM 5) 安裝 CUDA 12 專用 onnxruntime-gpu
 echo [STEP] 安裝 onnxruntime-gpu (CUDA 12) ...
-pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
+conda run -n anylabeling pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 if errorlevel 1 (
     echo [ERROR] onnxruntime-gpu 安裝失敗。
     exit /b 1
 )
 
-REM 7) 安裝其他 GPU 依賴
+REM 6) 安裝其他 GPU 依賴
 echo [STEP] 安裝 requirements-gpu.txt ...
-pip install -r requirements-gpu.txt
+conda run -n anylabeling pip install -r requirements-gpu.txt
 if errorlevel 1 (
     echo [ERROR] requirements-gpu.txt 安裝失敗。
     exit /b 1
 )
 
-REM 8) 驗證 onnxruntime 版本
+REM 7) 驗證 onnxruntime 版本
 echo [STEP] 驗證 onnxruntime 安裝結果 ...
-pip list | findstr onnxruntime
+conda run -n anylabeling pip list | findstr onnxruntime
 
 echo.
 echo [DONE] 安裝完成。你可以執行 start.bat 來啟動 X-AnyLabeling。
